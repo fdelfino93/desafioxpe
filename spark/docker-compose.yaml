@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  spark-master:
+    image: bde2020/spark-master:3.3.0-hadoop3.3
+    container_name: spark-master
+    ports:
+      - "8080:8080"  # Interface Web do Spark Master
+      - "7077:7077"  # Porta do Spark Master
+    environment:
+      - INIT_DAEMON_STEP=setup_spark
+      - SPARK_MODE=master
+    env_file:
+      - ../.env_kafka_connect  # Carregar variáveis do arquivo no diretório superior
+    volumes:
+      - ./jars:/opt/spark/jars  # Monta os JARs necessários para integração com S3
+
+  spark-worker:
+    image: bde2020/spark-worker:3.3.0-hadoop3.3
+    container_name: spark-worker
+    ports:
+      - "8081:8081"  # Interface Web do Spark Worker
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_MODE=worker
+    env_file:
+      - ../.env_kafka_connect  # Carregar variáveis do arquivo no diretório superior
+    depends_on:
+      - spark-master
+    volumes:
+      - ./jars:/opt/spark/jars  # Monta os JARs necessários para integração com S3
+
+  jupyter-notebook:
+    image: jupyter/pyspark-notebook:latest
+    container_name: jupyter-notebook
+    ports:
+      - "8888:8888"  # Interface do Jupyter Notebook
+    volumes:
+      - ./notebooks:/home/jovyan/work  # Monta os notebooks
+      - ./jars:/opt/spark/jars         # Monta os JARs necessários para integração com S3
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+    command: start-notebook.sh --NotebookApp.token=''
+    env_file:
+      - ../.env_kafka_connect  # Carregar variáveis do arquivo no diretório superior
+    depends_on:
+      - spark-master
