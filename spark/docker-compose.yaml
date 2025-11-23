@@ -19,7 +19,8 @@ services:
     image: bde2020/spark-worker:3.3.0-hadoop3.3
     container_name: spark-worker
     ports:
-      - "8081:8081"  # Interface Web do Spark Worker
+      # Alterado para evitar conflito com schema-registry (8081 já em uso)
+      - "8085:8081"  # Interface Web do Spark Worker
     environment:
       - SPARK_MASTER=spark://spark-master:7077
       - SPARK_MODE=worker

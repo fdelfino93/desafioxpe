@@ -1,0 +1,18 @@
+# Sensíveis / credenciais / ambiente local
+.env
+.env_kafka_connect
+.venv/
+work/
+tmp_ipca.json
+ETL/
+importar-executado.ipynb
+importar-executado.html
+.ipynb_checkpoints/
+*.swp
+
+# Docs gerados / não versionar
+docs/docs/
+
+# Spark JARs (local only; not versioned)
+spark/jars/aws-java-sdk-bundle-1.12.262.jar
+spark/jars/hadoop-aws-3.3.4.jar
